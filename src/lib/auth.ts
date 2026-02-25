@@ -12,13 +12,14 @@ export async function createSession(userId: string) {
   const rawToken = crypto.randomBytes(32).toString("hex")
   const token = hashToken(rawToken)
 
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 jours
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
 
   await prisma.session.create({
     data: { token, userId, expiresAt },
   })
 
-  cookies().set(COOKIE_NAME, rawToken, {
+  const cookieStore = cookies()
+  cookieStore.set(COOKIE_NAME, rawToken, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -28,7 +29,8 @@ export async function createSession(userId: string) {
 }
 
 export async function getCurrentUser() {
-  const rawToken = cookies().get(COOKIE_NAME)?.value
+  const cookieStore = cookies()
+  const rawToken = cookieStore.get(COOKIE_NAME)?.value
   if (!rawToken) return null
 
   const token = hashToken(rawToken)
@@ -45,10 +47,13 @@ export async function getCurrentUser() {
 }
 
 export async function destroySession() {
-  const rawToken = cookies().get(COOKIE_NAME)?.value
+  const cookieStore = cookies()
+  const rawToken = cookieStore.get(COOKIE_NAME)?.value
+
   if (rawToken) {
     const token = hashToken(rawToken)
     await prisma.session.deleteMany({ where: { token } })
   }
-  cookies().delete(COOKIE_NAME)
+
+  cookieStore.delete(COOKIE_NAME)
 }
