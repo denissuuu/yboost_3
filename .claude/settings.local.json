@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"import\\('dotenv/config'\\).then\\(\\(\\) => console.log\\('DB:', process.env.DATABASE_URL\\)\\)\")",
+      "PowerShell(cd C:\\\\Users\\\\onetd\\\\yboost_3; $env:DATABASE_URL=\"postgresql://postgres:Smaug974@localhost:5432/postgres\"; npx prisma migrate dev --name init 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\pg_isready.exe\" -h localhost -p 5432 -U postgres 2>&1)",
+      "PowerShell($env:PGPASSWORD=\"Smaug974\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"\\\\conninfo\" 2>&1)",
+      "PowerShell(Restart-Service -Name \"postgresql-x64-18\" -Force; Start-Sleep -Seconds 2; \\(Get-Service \"postgresql-x64-18\"\\).Status)",
+      "PowerShell(& \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\pg_ctl.exe\" reload -D \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\data\" 2>&1)",
+      "PowerShell(Start-Process -Verb RunAs -FilePath \"powershell.exe\" -ArgumentList \"-Command Restart-Service postgresql-x64-18; Start-Sleep 2\" -Wait 2>&1; Start-Sleep -Seconds 3; \\(Get-Service \"postgresql-x64-18\"\\).Status)",
+      "PowerShell($env:PGPASSWORD=\"\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"ALTER USER postgres WITH PASSWORD 'Smaug974';\" 2>&1)",
+      "PowerShell($env:PGPASSWORD=\"Smaug974\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\18\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"SELECT version\\(\\);\" 2>&1)",
+      "Bash(node server/index.js)",
+      "Bash(node -e ' *)",
+      "Bash(npx prisma *)",
+      "Bash(npm install *)",
+      "Bash(npx tsx *)",
+      "Bash(curl -s http://localhost:3001/api/recipes)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/register -H 'Content-Type: application/json' -d '{\"name\":\"Test\",\"email\":\"test@test.com\",\"password\":\"123456\"}')",
+      "Bash(npx vite *)",
+      "Bash(curl -s http://localhost:5174/)",
+      "Bash(curl -s http://localhost:5174/api/recipes)",
+      "Bash(pkill -f \"tsx server/index.js\")",
+      "Bash(pkill -f \"vite\")"
+    ]
+  }
+}
