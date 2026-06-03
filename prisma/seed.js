@@ -27,6 +27,8 @@ async function main() {
       description: 'Un bouillon profond et fumé, garni de nouilles élastiques, de porc chashu fondant, d\'un œuf mollet mariné et de légumes croquants.',
       country: 'Japon',
       type: 'plat',
+      prepTime: 90,
+      servings: 2,
       diet: [],
       imageUrl: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=800&q=80',
       ingredients: [

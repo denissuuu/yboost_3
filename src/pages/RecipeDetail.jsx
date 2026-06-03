@@ -4,6 +4,22 @@ import { apiFetch } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import RatingStars from '../components/RatingStars.jsx'
 
+function formatTime(minutes) {
+  if (!minutes) return null
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`
+}
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000
+  if (diff < 60) return 'à l\'instant'
+  if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`
+  if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`
+  return `il y a ${Math.floor(diff / 86400)} j`
+}
+
 export default function RecipeDetail() {
   const { id } = useParams()
   const { user } = useAuth()
@@ -15,6 +31,8 @@ export default function RecipeDetail() {
   const [ratingLoading, setRatingLoading] = useState(false)
   const [error, setError] = useState('')
   const [shareCopied, setShareCopied] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [commentLoading, setCommentLoading] = useState(false)
 
   useEffect(() => {
     apiFetch(`/recipes/${id}`)
@@ -76,6 +94,29 @@ export default function RecipeDetail() {
     }
   }
 
+  async function handleAddComment(e) {
+    e.preventDefault()
+    if (!commentText.trim()) return
+    setCommentLoading(true)
+    try {
+      const comment = await apiFetch(`/recipes/${id}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({ content: commentText.trim() }),
+      })
+      setRecipe((r) => ({ ...r, comments: [comment, ...(r.comments || [])] }))
+      setCommentText('')
+    } catch (err) {
+      alert(err.message)
+    } finally { setCommentLoading(false) }
+  }
+
+  async function handleDeleteComment(commentId) {
+    try {
+      await apiFetch(`/recipes/${id}/comments/${commentId}`, { method: 'DELETE' })
+      setRecipe((r) => ({ ...r, comments: r.comments.filter((c) => c.id !== commentId) }))
+    } catch (err) { alert(err.message) }
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center min-h-96">
       <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
@@ -102,9 +143,7 @@ export default function RecipeDetail() {
         <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 max-w-7xl mx-auto">
           <div className="flex flex-wrap gap-2 mb-3">
-            <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-              {recipe.type}
-            </span>
+            <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">{recipe.type}</span>
             {recipe.diet?.map(d => (
               <span key={d} className="bg-white/10 text-zinc-200 text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
                 {DIET_LABELS[d] || d}
@@ -115,6 +154,8 @@ export default function RecipeDetail() {
           <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-sm">
             <span className="text-zinc-300">{recipe.country}</span>
             <span>par <span className="font-semibold text-zinc-200">{recipe.author?.name}</span></span>
+            {recipe.prepTime && <span>{formatTime(recipe.prepTime)}</span>}
+            {recipe.servings && <span>{recipe.servings} portions</span>}
             <span>{recipe._count?.favorites || 0} favori{recipe._count?.favorites !== 1 ? 's' : ''}</span>
             <RatingStars score={recipe.avgRating} readonly size="sm" />
           </div>
@@ -146,18 +187,99 @@ export default function RecipeDetail() {
               <ol className="space-y-4">
                 {recipe.steps?.map((step, i) => (
                   <li key={i} className="flex gap-4">
-                    <span className="shrink-0 w-8 h-8 bg-orange-500 text-white text-sm font-bold rounded-full flex items-center justify-center">
-                      {i + 1}
-                    </span>
+                    <span className="shrink-0 w-8 h-8 bg-orange-500 text-white text-sm font-bold rounded-full flex items-center justify-center">{i + 1}</span>
                     <p className="text-zinc-300 leading-relaxed pt-1">{step}</p>
                   </li>
                 ))}
               </ol>
             </div>
+
+            {/* Commentaires */}
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
+              <h2 className="text-xl font-bold text-zinc-100 mb-5">
+                Commentaires <span className="text-zinc-600 font-normal text-base">({recipe.comments?.length || 0})</span>
+              </h2>
+
+              {user ? (
+                <form onSubmit={handleAddComment} className="flex gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-full bg-orange-500 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-1">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 flex gap-2">
+                    <textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder="Partagez votre avis sur cette recette…"
+                      rows={2}
+                      className="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                    />
+                    <button
+                      type="submit"
+                      disabled={commentLoading || !commentText.trim()}
+                      className="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 disabled:opacity-40 transition-colors self-end"
+                    >
+                      Envoyer
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <p className="text-sm text-zinc-500 mb-6">
+                  <Link to="/login" className="text-orange-400 hover:underline">Connectez-vous</Link> pour laisser un commentaire.
+                </p>
+              )}
+
+              {!recipe.comments?.length ? (
+                <p className="text-sm text-zinc-600">Aucun commentaire pour l'instant. Soyez le premier !</p>
+              ) : (
+                <div className="space-y-4">
+                  {recipe.comments.map((c) => (
+                    <div key={c.id} className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-zinc-700 text-zinc-300 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {c.user?.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="text-sm font-semibold text-zinc-200">{c.user?.name}</span>
+                          <span className="text-xs text-zinc-600">{timeAgo(c.createdAt)}</span>
+                        </div>
+                        <p className="text-sm text-zinc-300 leading-relaxed">{c.content}</p>
+                      </div>
+                      {user?.id === c.user?.id && (
+                        <button
+                          onClick={() => handleDeleteComment(c.id)}
+                          className="text-zinc-700 hover:text-red-400 transition-colors text-xs shrink-0 mt-1"
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:w-72 shrink-0 space-y-4">
+
+            {/* Infos rapides */}
+            {(recipe.prepTime || recipe.servings) && (
+              <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5 grid grid-cols-2 gap-4">
+                {recipe.prepTime && (
+                  <div>
+                    <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Durée</p>
+                    <p className="text-lg font-bold text-zinc-100">{formatTime(recipe.prepTime)}</p>
+                  </div>
+                )}
+                {recipe.servings && (
+                  <div>
+                    <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Portions</p>
+                    <p className="text-lg font-bold text-zinc-100">{recipe.servings} pers.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5 space-y-3">
               <button
                 onClick={toggleFavorite}
@@ -199,12 +321,12 @@ export default function RecipeDetail() {
 
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
               <h3 className="font-bold text-zinc-100 mb-3">
-                Avis <span className="text-zinc-600 font-normal text-sm">({recipe.ratings?.length || 0})</span>
+                Notes <span className="text-zinc-600 font-normal text-sm">({recipe.ratings?.length || 0})</span>
               </h3>
               {recipe.ratings?.length === 0 ? (
-                <p className="text-sm text-zinc-600">Aucun avis pour l'instant.</p>
+                <p className="text-sm text-zinc-600">Aucune note pour l'instant.</p>
               ) : (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
+                <div className="space-y-3 max-h-48 overflow-y-auto">
                   {recipe.ratings?.map((r) => (
                     <div key={r.id} className="flex items-center justify-between text-sm py-2 border-b border-zinc-800 last:border-0">
                       <span className="font-medium text-zinc-300">{r.user?.name}</span>

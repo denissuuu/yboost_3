@@ -16,7 +16,8 @@ export default function RecipeForm() {
 
   const [form, setForm] = useState({
     title: '', description: '', country: '', type: 'plat',
-    diet: [], imageUrl: '', ingredients: [emptyIngredient()], steps: [''],
+    diet: [], imageUrl: '', prepTime: '', servings: '',
+    ingredients: [emptyIngredient()], steps: [''],
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -27,6 +28,7 @@ export default function RecipeForm() {
       setForm({
         title: r.title, description: r.description, country: r.country,
         type: r.type, diet: r.diet || [], imageUrl: r.imageUrl || '',
+        prepTime: r.prepTime ?? '', servings: r.servings ?? '',
         ingredients: Array.isArray(r.ingredients) && r.ingredients.length > 0 ? r.ingredients : [emptyIngredient()],
         steps: r.steps?.length > 0 ? r.steps : [''],
       })
@@ -91,15 +93,23 @@ export default function RecipeForm() {
             <label className="block text-sm font-medium text-zinc-400 mb-1">Description *</label>
             <textarea className={inputCls} rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} required placeholder="Décrivez votre recette…" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-1">Type de plat *</label>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Type *</label>
               <select className={inputCls} value={form.type} onChange={(e) => set('type', e.target.value)}>
                 {TYPES.map((t) => <option key={t} value={t}>{TYPE_LABELS[t]}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-1">URL de l'image</label>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Temps (min)</label>
+              <input className={inputCls} type="number" min="1" value={form.prepTime} onChange={(e) => set('prepTime', e.target.value)} placeholder="Ex : 45" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Portions</label>
+              <input className={inputCls} type="number" min="1" value={form.servings} onChange={(e) => set('servings', e.target.value)} placeholder="Ex : 4" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Image (URL)</label>
               <input className={inputCls} type="url" value={form.imageUrl} onChange={(e) => set('imageUrl', e.target.value)} placeholder="https://…" />
             </div>
           </div>

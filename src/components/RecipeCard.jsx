@@ -4,6 +4,14 @@ import RatingStars from './RatingStars.jsx'
 const DISH_LABELS = { entree: 'Entrée', plat: 'Plat', dessert: 'Dessert', boisson: 'Boisson' }
 const DIET_LABELS = { vegetarien: 'Végétarien', vegan: 'Vegan', 'sans-gluten': 'Sans gluten', 'sans-lactose': 'Sans lactose', halal: 'Halal', casher: 'Casher' }
 
+function formatTime(minutes) {
+  if (!minutes) return null
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`
+}
+
 export default function RecipeCard({ recipe }) {
   return (
     <Link
@@ -28,6 +36,15 @@ export default function RecipeCard({ recipe }) {
         <h3 className="font-bold text-zinc-100 text-base leading-snug line-clamp-1">{recipe.title}</h3>
         <p className="text-xs text-zinc-500 font-medium">{recipe.country}</p>
         <p className="text-sm text-zinc-400 line-clamp-2 flex-1 leading-relaxed">{recipe.description}</p>
+
+        {/* Temps + portions */}
+        {(recipe.prepTime || recipe.servings) && (
+          <div className="flex gap-3 text-xs text-zinc-500">
+            {recipe.prepTime && <span>{formatTime(recipe.prepTime)}</span>}
+            {recipe.servings && <span>{recipe.servings} pers.</span>}
+          </div>
+        )}
+
         {recipe.diet?.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {recipe.diet.slice(0, 2).map((d) => (
