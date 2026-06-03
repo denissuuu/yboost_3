@@ -28,8 +28,7 @@ export default function Register() {
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="text-5xl">👨‍🍳</span>
-          <h1 className="text-2xl font-extrabold text-zinc-100 mt-3">Créer un compte</h1>
+          <h1 className="text-2xl font-extrabold text-zinc-100">Créer un compte</h1>
           <p className="text-zinc-500 mt-1 text-sm">Rejoignez la communauté des passionnés de cuisine.</p>
         </div>
 

@@ -13,20 +13,20 @@ export default function RecipeCard({ recipe }) {
       <div className="relative h-48 bg-zinc-800 overflow-hidden shrink-0">
         {recipe.imageUrl
           ? <img src={recipe.imageUrl} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90" />
-          : <div className="w-full h-full flex items-center justify-center text-5xl">🍴</div>
+          : <div className="w-full h-full flex items-center justify-center text-zinc-600 text-sm font-medium">Aucune image</div>
         }
         <span className="absolute top-3 left-3 bg-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
           {DISH_LABELS[recipe.type] || recipe.type}
         </span>
         {recipe._count?.favorites > 0 && (
           <span className="absolute top-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-            ❤️ {recipe._count.favorites}
+            {recipe._count.favorites} favori{recipe._count.favorites !== 1 ? 's' : ''}
           </span>
         )}
       </div>
       <div className="p-4 flex flex-col flex-1 gap-2">
         <h3 className="font-bold text-zinc-100 text-base leading-snug line-clamp-1">{recipe.title}</h3>
-        <p className="text-xs text-zinc-500 font-medium">🌍 {recipe.country}</p>
+        <p className="text-xs text-zinc-500 font-medium">{recipe.country}</p>
         <p className="text-sm text-zinc-400 line-clamp-2 flex-1 leading-relaxed">{recipe.description}</p>
         {recipe.diet?.length > 0 && (
           <div className="flex flex-wrap gap-1">

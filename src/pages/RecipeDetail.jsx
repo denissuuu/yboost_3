@@ -83,7 +83,6 @@ export default function RecipeDetail() {
   )
   if (error || !recipe) return (
     <div className="max-w-xl mx-auto text-center py-24 px-4">
-      <p className="text-5xl mb-4">😕</p>
       <p className="text-zinc-400 mb-4">{error || 'Recette introuvable'}</p>
       <Link to="/recipes" className="text-orange-400 font-semibold hover:text-orange-300">← Retour aux recettes</Link>
     </div>
@@ -98,7 +97,7 @@ export default function RecipeDetail() {
       <div className="relative h-72 sm:h-96 bg-zinc-900 overflow-hidden">
         {recipe.imageUrl
           ? <img src={recipe.imageUrl} alt={recipe.title} className="w-full h-full object-cover opacity-50" />
-          : <div className="w-full h-full flex items-center justify-center text-8xl opacity-20">🍴</div>
+          : <div className="w-full h-full bg-zinc-800" />
         }
         <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 max-w-7xl mx-auto">
@@ -114,9 +113,9 @@ export default function RecipeDetail() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">{recipe.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-sm">
-            <span className="text-zinc-300">🌍 {recipe.country}</span>
-            <span>👨‍🍳 par <span className="font-semibold text-zinc-200">{recipe.author?.name}</span></span>
-            <span>❤️ {recipe._count?.favorites || 0}</span>
+            <span className="text-zinc-300">{recipe.country}</span>
+            <span>par <span className="font-semibold text-zinc-200">{recipe.author?.name}</span></span>
+            <span>{recipe._count?.favorites || 0} favori{recipe._count?.favorites !== 1 ? 's' : ''}</span>
             <RatingStars score={recipe.avgRating} readonly size="sm" />
           </div>
         </div>
@@ -131,7 +130,7 @@ export default function RecipeDetail() {
             <p className="text-zinc-300 text-lg leading-relaxed">{recipe.description}</p>
 
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
-              <h2 className="text-xl font-bold text-zinc-100 mb-4">🧂 Ingrédients</h2>
+              <h2 className="text-xl font-bold text-zinc-100 mb-4">Ingrédients</h2>
               <ul className="divide-y divide-zinc-800">
                 {Array.isArray(recipe.ingredients) && recipe.ingredients.map((ing, i) => (
                   <li key={i} className="flex items-center justify-between py-2.5 text-sm">
@@ -143,7 +142,7 @@ export default function RecipeDetail() {
             </div>
 
             <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
-              <h2 className="text-xl font-bold text-zinc-100 mb-4">👨‍🍳 Préparation</h2>
+              <h2 className="text-xl font-bold text-zinc-100 mb-4">Préparation</h2>
               <ol className="space-y-4">
                 {recipe.steps?.map((step, i) => (
                   <li key={i} className="flex gap-4">
@@ -166,23 +165,23 @@ export default function RecipeDetail() {
                   isFav ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20' : 'border-zinc-700 text-zinc-300 hover:border-rose-500/30 hover:text-rose-400'
                 }`}
               >
-                {isFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}
+                {isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}
               </button>
 
               <button
                 onClick={handleShare}
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-300 hover:border-orange-500/30 hover:text-orange-400 transition-colors"
               >
-                {shareCopied ? '✅ Lien copié !' : '🔗 Partager'}
+                {shareCopied ? 'Lien copié !' : 'Partager'}
               </button>
 
               {isOwner && (
                 <div className="pt-1 border-t border-zinc-800 flex gap-2">
                   <Link to={`/recipes/${id}/edit`} className="flex-1 text-center py-2 rounded-xl border border-zinc-700 text-sm font-medium text-zinc-400 hover:bg-zinc-800 transition-colors">
-                    ✏️ Modifier
+                    Modifier
                   </Link>
                   <button onClick={handleDelete} className="flex-1 py-2 rounded-xl border border-red-500/30 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors">
-                    🗑️ Supprimer
+                    Supprimer
                   </button>
                 </div>
               )}

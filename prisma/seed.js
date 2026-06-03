@@ -106,7 +106,7 @@ async function main() {
       country: 'Espagne',
       type: 'entree',
       diet: ['vegetarien', 'vegan', 'sans-gluten'],
-      imageUrl: 'https://images.unsplash.com/photo-1629236714692-5f61ca946b85?w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80',
       ingredients: [
         { name: 'Tomates bien mûres', quantity: '800', unit: 'g' },
         { name: 'Concombre', quantity: '1', unit: '' },
@@ -284,7 +284,7 @@ async function main() {
       country: 'Grèce',
       type: 'plat',
       diet: [],
-      imageUrl: 'https://images.unsplash.com/photo-1673964217617-38ed4f7fffb3?w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=800&q=80',
       ingredients: [
         { name: 'Aubergines', quantity: '4', unit: '' },
         { name: 'Agneau haché', quantity: '600', unit: 'g' },

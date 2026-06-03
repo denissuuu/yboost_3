@@ -56,18 +56,17 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-zinc-100 mb-5">Explorer par type</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { type: 'entree', label: 'Entrées', emoji: '🥗', border: 'border-emerald-500/20', glow: 'hover:border-emerald-500/40' },
-              { type: 'plat', label: 'Plats', emoji: '🍲', border: 'border-orange-500/20', glow: 'hover:border-orange-500/40' },
-              { type: 'dessert', label: 'Desserts', emoji: '🍰', border: 'border-pink-500/20', glow: 'hover:border-pink-500/40' },
-              { type: 'boisson', label: 'Boissons', emoji: '🥤', border: 'border-cyan-500/20', glow: 'hover:border-cyan-500/40' },
-            ].map(({ type, label, emoji, border, glow }) => (
+              { type: 'entree', label: 'Entrées', border: 'border-emerald-500/20', glow: 'hover:border-emerald-500/40' },
+              { type: 'plat', label: 'Plats', border: 'border-orange-500/20', glow: 'hover:border-orange-500/40' },
+              { type: 'dessert', label: 'Desserts', border: 'border-pink-500/20', glow: 'hover:border-pink-500/40' },
+              { type: 'boisson', label: 'Boissons', border: 'border-cyan-500/20', glow: 'hover:border-cyan-500/40' },
+            ].map(({ type, label, border, glow }) => (
               <Link
                 key={type}
                 to={`/recipes?type=${type}`}
                 className={`flex flex-col items-center gap-3 p-6 bg-zinc-900 rounded-2xl border ${border} ${glow} hover:-translate-y-0.5 transition-all text-center`}
               >
-                <span className="text-4xl">{emoji}</span>
-                <span className="font-semibold text-zinc-300 text-sm">{label}</span>
+                <span className="font-semibold text-zinc-300 text-sm uppercase tracking-wide">{label}</span>
               </Link>
             ))}
           </div>
@@ -83,7 +82,6 @@ export default function Home() {
           </div>
           {featured.length === 0 ? (
             <div className="text-center py-16 bg-zinc-900 rounded-2xl border border-zinc-800">
-              <p className="text-4xl mb-3">🍽️</p>
               <p className="text-zinc-500 mb-3">Aucune recette pour l'instant.</p>
               <Link to="/register" className="text-orange-400 font-semibold hover:text-orange-300 transition-colors">
                 Créez un compte pour en ajouter !

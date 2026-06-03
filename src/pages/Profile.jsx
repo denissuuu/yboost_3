@@ -70,7 +70,7 @@ export default function Profile() {
           onClick={() => { setEditOpen((v) => !v); setEditError(''); setEditSuccess('') }}
           className="shrink-0 px-4 py-2 border border-zinc-700 rounded-xl text-sm font-semibold text-zinc-400 hover:bg-zinc-800 transition-colors"
         >
-          {editOpen ? 'Fermer' : '✏️ Modifier'}
+          {editOpen ? 'Fermer' : 'Modifier'}
         </button>
       </div>
 
@@ -131,13 +131,11 @@ export default function Profile() {
         <div className="text-center py-16 bg-zinc-900 rounded-2xl border border-zinc-800">
           {tab === 'recipes' ? (
             <>
-              <p className="text-4xl mb-3">🍳</p>
               <p className="text-zinc-500 mb-4">Vous n'avez pas encore créé de recette.</p>
               <Link to="/recipes/new" className="px-5 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition-colors">Ajouter une recette</Link>
             </>
           ) : (
             <>
-              <p className="text-4xl mb-3">🤍</p>
               <p className="text-zinc-500">Aucun favori pour l'instant.</p>
               <Link to="/recipes" className="text-orange-400 font-semibold hover:text-orange-300 text-sm mt-2 inline-block">Explorer les recettes →</Link>
             </>

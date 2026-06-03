@@ -13,8 +13,8 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-zinc-900 border-b border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
-          🍽️ RecettesMonde
+        <Link to="/" className="text-xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
+          RecettesMonde
         </Link>
         <div className="flex items-center gap-1">
           <NavLink

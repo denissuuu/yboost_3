@@ -67,7 +67,7 @@ export default function RecipeForm() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <h1 className="text-2xl font-bold text-zinc-100 mb-8">
-        {isEdit ? '✏️ Modifier la recette' : '🍳 Nouvelle recette'}
+        {isEdit ? 'Modifier la recette' : 'Nouvelle recette'}
       </h1>
 
       {error && (
@@ -75,7 +75,6 @@ export default function RecipeForm() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Infos générales */}
         <div className={cardCls}>
           <h2 className="font-semibold text-zinc-200">Informations générales</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -117,10 +116,9 @@ export default function RecipeForm() {
           </div>
         </div>
 
-        {/* Ingrédients */}
         <div className={cardCls}>
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-zinc-200">🧂 Ingrédients *</h2>
+            <h2 className="font-semibold text-zinc-200">Ingrédients *</h2>
             <button type="button" onClick={() => set('ingredients', [...form.ingredients, emptyIngredient()])}
               className="text-sm text-orange-400 font-semibold hover:text-orange-300 transition-colors">+ Ajouter</button>
           </div>
@@ -134,16 +132,15 @@ export default function RecipeForm() {
                 className="flex-1 min-w-0 px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" />
               {form.ingredients.length > 1 && (
                 <button type="button" onClick={() => set('ingredients', form.ingredients.filter((_, idx) => idx !== i))}
-                  className="text-zinc-600 hover:text-red-400 transition-colors px-1 shrink-0">✕</button>
+                  className="text-zinc-600 hover:text-red-400 transition-colors px-1 shrink-0">×</button>
               )}
             </div>
           ))}
         </div>
 
-        {/* Étapes */}
         <div className={cardCls}>
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-zinc-200">👨‍🍳 Étapes *</h2>
+            <h2 className="font-semibold text-zinc-200">Étapes *</h2>
             <button type="button" onClick={() => set('steps', [...form.steps, ''])}
               className="text-sm text-orange-400 font-semibold hover:text-orange-300 transition-colors">+ Étape</button>
           </div>
@@ -155,7 +152,7 @@ export default function RecipeForm() {
                 className="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none" />
               {form.steps.length > 1 && (
                 <button type="button" onClick={() => set('steps', form.steps.filter((_, idx) => idx !== i))}
-                  className="text-zinc-600 hover:text-red-400 transition-colors mt-2 px-1 shrink-0">✕</button>
+                  className="text-zinc-600 hover:text-red-400 transition-colors mt-2 px-1 shrink-0">×</button>
               )}
             </div>
           ))}
