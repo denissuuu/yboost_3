@@ -30,9 +30,11 @@ export default function Recipes() {
   const search = searchParams.get('search') || ''
   const type = searchParams.get('type') || ''
   const diet = searchParams.get('diet') || ''
+  const country = searchParams.get('country') || ''
   const page = parseInt(searchParams.get('page') || '1')
 
   const [searchInput, setSearchInput] = useState(search)
+  const [countryInput, setCountryInput] = useState(country)
 
   const fetchRecipes = useCallback(async () => {
     setLoading(true)
