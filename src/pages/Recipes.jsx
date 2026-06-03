@@ -43,6 +43,7 @@ export default function Recipes() {
       if (search) params.set('search', search)
       if (type) params.set('type', type)
       if (diet) params.set('diet', diet)
+      if (country) params.set('country', country)
       const data = await apiFetch(`/recipes?${params}`)
       setRecipes(data.recipes)
       setTotal(data.total)
@@ -52,10 +53,11 @@ export default function Recipes() {
     } finally {
       setLoading(false)
     }
-  }, [search, type, diet, page])
+  }, [search, type, diet, country, page])
 
   useEffect(() => { fetchRecipes() }, [fetchRecipes])
   useEffect(() => { setSearchInput(search) }, [search])
+  useEffect(() => { setCountryInput(country) }, [country])
 
   function setParam(key, value) {
     const p = new URLSearchParams(searchParams)
@@ -93,6 +95,17 @@ export default function Recipes() {
           <button type="submit" className="btn-primary-sm">OK</button>
         </form>
 
+        <form onSubmit={(e) => { e.preventDefault(); setParam('country', countryInput.trim()) }} className="filter-search">
+          <input
+            type="text"
+            placeholder="Pays d'origine…"
+            value={countryInput}
+            onChange={(e) => setCountryInput(e.target.value)}
+            className="search-input"
+          />
+          <button type="submit" className="btn-primary-sm">OK</button>
+        </form>
+
         <div className="filter-group">
           <label className="filter-label">Type de plat</label>
           {TYPES.map(({ value, label }) => (
@@ -123,7 +136,7 @@ export default function Recipes() {
           ))}
         </div>
 
-        {(search || type || diet) && (
+        {(search || type || diet || country) && (
           <button className="btn-outline-sm" onClick={() => setSearchParams({})}>
             Réinitialiser
           </button>
