@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { apiFetch } from '../api/client.js'
+import { useAuth } from '../context/AuthContext.jsx'
 import RecipeCard from '../components/RecipeCard.jsx'
 
 export default function Home() {
+  const { user } = useAuth()
   const [search, setSearch] = useState('')
   const [featured, setFeatured] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [favLoading, setFavLoading] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
     apiFetch('/recipes?limit=6').then((d) => setFeatured(d.recipes)).catch(() => {})
   }, [])
+
+  useEffect(() => {
+    if (!user) { setFavorites([]); return }
+    setFavLoading(true)
+    apiFetch('/users/me/favorites')
+      .then(setFavorites)
+      .catch(() => setFavorites([]))
+      .finally(() => setFavLoading(false))
+  }, [user])
 
   function handleSearch(e) {
     e.preventDefault()
@@ -40,10 +53,7 @@ export default function Home() {
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-white/50 border border-white/20 text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/40"
             />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-orange-50 transition-colors shrink-0"
-            >
+            <button type="submit" className="px-6 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-orange-50 transition-colors shrink-0">
               Rechercher
             </button>
           </form>
@@ -51,6 +61,50 @@ export default function Home() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-14">
+
+        {/* Favoris — visible uniquement si connecté */}
+        {user && (
+          <section>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-2xl font-bold text-zinc-100">Mes favoris</h2>
+                {favorites.length > 0 && (
+                  <p className="text-sm text-zinc-500 mt-0.5">{favorites.length} recette{favorites.length !== 1 ? 's' : ''} sauvegardée{favorites.length !== 1 ? 's' : ''}</p>
+                )}
+              </div>
+              {favorites.length > 0 && (
+                <Link to="/profile" className="text-orange-400 font-semibold text-sm hover:text-orange-300 transition-colors">
+                  Voir tout →
+                </Link>
+              )}
+            </div>
+
+            {favLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-zinc-800 animate-pulse rounded-2xl h-64" />
+                ))}
+              </div>
+            ) : favorites.length === 0 ? (
+              <div className="flex items-center gap-4 p-5 bg-zinc-900 rounded-2xl border border-zinc-800 border-dashed">
+                <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center shrink-0">
+                  <span className="text-zinc-600 text-lg">♡</span>
+                </div>
+                <div>
+                  <p className="text-zinc-400 text-sm font-medium">Aucun favori pour l'instant</p>
+                  <Link to="/recipes" className="text-orange-400 text-sm hover:text-orange-300 transition-colors">
+                    Parcourir les recettes →
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {favorites.slice(0, 4).map((r) => <RecipeCard key={r.id} recipe={r} />)}
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Categories */}
         <section>
           <h2 className="text-2xl font-bold text-zinc-100 mb-5">Explorer par type</h2>
@@ -72,7 +126,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured */}
+        {/* Dernières recettes */}
         <section>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-2xl font-bold text-zinc-100">Dernières recettes</h2>
@@ -93,6 +147,7 @@ export default function Home() {
             </div>
           )}
         </section>
+
       </div>
     </div>
   )
