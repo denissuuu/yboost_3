@@ -71,6 +71,21 @@ export default function RecipeDetail() {
     }
   }
 
+  const [shareCopied, setShareCopied] = useState(false)
+
+  async function handleShare() {
+    const url = window.location.href
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.title, url })
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(url)
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 2000)
+    }
+  }
+
   if (loading) return <div className="page-loading">Chargement…</div>
   if (error || !recipe) return <div className="page-error">{error || 'Recette introuvable'}</div>
 
@@ -139,6 +154,10 @@ export default function RecipeDetail() {
             onClick={toggleFavorite}
           >
             {isFav ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris'}
+          </button>
+
+          <button className="btn-share" onClick={handleShare}>
+            {shareCopied ? '✅ Lien copié !' : '🔗 Partager'}
           </button>
 
           {isOwner && (

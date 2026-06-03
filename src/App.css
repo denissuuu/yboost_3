@@ -334,6 +334,20 @@
 .btn-fav:hover { border-color: #f43f5e; color: #f43f5e }
 .btn-fav.active { background: #fff1f2; border-color: #f43f5e; color: #f43f5e }
 
+.btn-share {
+  width: 100%;
+  padding: .65rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-share:hover { border-color: var(--primary); color: var(--primary) }
+
 /* ── Auth pages ───────────────────────────────────── */
 .auth-page {
   display: flex;

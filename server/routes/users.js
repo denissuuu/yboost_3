@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 import { prisma } from '../lib/prisma.js'
 
 function withAvgRating(recipe) {
@@ -75,5 +76,37 @@ export async function userRoutes(fastify) {
       where: { userId: request.user.sub, recipeId: request.params.recipeId },
     })
     return { message: 'Retiré des favoris' }
+  })
+
+  // PUT /api/users/me — éditer le profil
+  fastify.put('/me', auth, async (request, reply) => {
+    const { name, email, password, currentPassword } = request.body ?? {}
+
+    const user = await prisma.user.findUnique({ where: { id: request.user.sub } })
+    if (!user) return reply.code(404).send({ error: 'Utilisateur introuvable' })
+
+    const data = {}
+
+    if (name?.trim()) data.name = name.trim()
+
+    if (email?.trim() && email !== user.email) {
+      const exists = await prisma.user.findUnique({ where: { email: email.trim() } })
+      if (exists) return reply.code(409).send({ error: 'Email déjà utilisé' })
+      data.email = email.trim()
+    }
+
+    if (password) {
+      if (!currentPassword) return reply.code(400).send({ error: 'Mot de passe actuel requis' })
+      const valid = await bcrypt.compare(currentPassword, user.password)
+      if (!valid) return reply.code(401).send({ error: 'Mot de passe actuel incorrect' })
+      data.password = await bcrypt.hash(password, 10)
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: request.user.sub },
+      data,
+      select: { id: true, name: true, email: true, createdAt: true },
+    })
+    return updated
   })
 }

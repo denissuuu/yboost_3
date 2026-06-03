@@ -57,3 +57,4 @@ model Favorite {
 
   @@id([userId, recipeId])
 }
+
