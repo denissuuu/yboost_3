@@ -12,65 +12,60 @@ export default function Register() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-    if (form.password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères')
-      return
-    }
+    if (form.password.length < 6) { setError('Le mot de passe doit contenir au moins 6 caractères'); return }
     setLoading(true)
     try {
       await register(form.name, form.email, form.password)
       navigate('/')
     } catch (err) {
       setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
+  const inputCls = "w-full px-4 py-3 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <h1>Inscription</h1>
-        <p className="auth-sub">Rejoignez la communauté des passionnés de cuisine.</p>
-        {error && <div className="alert-error">{error}</div>}
-        <form onSubmit={handleSubmit} className="auth-form">
-          <label>
-            Nom complet
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-              autoComplete="name"
-            />
-          </label>
-          <label>
-            Email
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              required
-              autoComplete="email"
-            />
-          </label>
-          <label>
-            Mot de passe
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              required
-              minLength={6}
-              autoComplete="new-password"
-            />
-          </label>
-          <button type="submit" className="btn-primary btn-full" disabled={loading}>
-            {loading ? 'Création…' : 'Créer mon compte'}
-          </button>
-        </form>
-        <p className="auth-footer">
-          Déjà un compte ? <Link to="/login">Se connecter</Link>
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <span className="text-5xl">👨‍🍳</span>
+          <h1 className="text-2xl font-extrabold text-zinc-100 mt-3">Créer un compte</h1>
+          <p className="text-zinc-500 mt-1 text-sm">Rejoignez la communauté des passionnés de cuisine.</p>
+        </div>
+
+        <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-8">
+          {error && (
+            <div className="mb-5 px-4 py-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-sm">{error}</div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Nom complet</label>
+              <input type="text" className={inputCls} value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required autoComplete="name" placeholder="Jean Dupont" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Email</label>
+              <input type="email" className={inputCls} value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                required autoComplete="email" placeholder="vous@exemple.com" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-400 mb-1">Mot de passe</label>
+              <input type="password" className={inputCls} value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                required minLength={6} autoComplete="new-password" placeholder="6 caractères minimum" />
+            </div>
+            <button type="submit" disabled={loading}
+              className="w-full py-3 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 disabled:opacity-60 transition-colors mt-2">
+              {loading ? 'Création…' : 'Créer mon compte'}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-sm text-zinc-600 mt-5">
+          Déjà un compte ?{' '}
+          <Link to="/login" className="text-orange-400 font-semibold hover:text-orange-300">Se connecter</Link>
         </p>
       </div>
     </div>

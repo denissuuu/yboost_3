@@ -11,7 +11,7 @@ export default function RatingStars({ score, readonly = false, size = 'md', onRa
       {[1, 2, 3, 4, 5].map((n) => (
         <span
           key={n}
-          className={`transition-colors select-none ${n <= display ? 'text-amber-400' : 'text-gray-300'} ${!readonly ? 'cursor-pointer hover:scale-110' : ''}`}
+          className={`transition-colors select-none ${n <= display ? 'text-amber-400' : 'text-zinc-700'} ${!readonly ? 'cursor-pointer hover:scale-110' : ''}`}
           onClick={() => !readonly && onRate?.(n)}
           onMouseEnter={() => !readonly && setHover(n)}
           onMouseLeave={() => !readonly && setHover(0)}
@@ -20,7 +20,7 @@ export default function RatingStars({ score, readonly = false, size = 'md', onRa
         </span>
       ))}
       {score != null && (
-        <span className="text-xs text-gray-500 ml-1 font-medium">{Number(score).toFixed(1)}</span>
+        <span className="text-xs text-zinc-500 ml-1 font-medium">{Number(score).toFixed(1)}</span>
       )}
     </div>
   )

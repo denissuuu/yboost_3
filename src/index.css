@@ -4,7 +4,11 @@
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background-color: #f8fafc;
-  color: #111827;
+  background-color: #09090b;
+  color: #fafafa;
   -webkit-font-smoothing: antialiased;
+}
+
+input, textarea, select {
+  color-scheme: dark;
 }
