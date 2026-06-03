@@ -1,16 +1,17 @@
 import { useState } from 'react'
 
+const sizes = { sm: 'text-base gap-0.5', md: 'text-xl gap-1', lg: 'text-3xl gap-1' }
+
 export default function RatingStars({ score, readonly = false, size = 'md', onRate }) {
   const [hover, setHover] = useState(0)
   const display = hover || Math.round(score || 0)
 
   return (
-    <div className={`stars stars-${size}`} aria-label={`Note: ${score ?? 'aucune'}/5`}>
+    <div className={`flex items-center ${sizes[size]}`} aria-label={`Note: ${score ?? 'aucune'}/5`}>
       {[1, 2, 3, 4, 5].map((n) => (
         <span
           key={n}
-          className={`star ${n <= display ? 'filled' : ''}`}
-          style={{ cursor: readonly ? 'default' : 'pointer' }}
+          className={`transition-colors select-none ${n <= display ? 'text-amber-400' : 'text-gray-300'} ${!readonly ? 'cursor-pointer hover:scale-110' : ''}`}
           onClick={() => !readonly && onRate?.(n)}
           onMouseEnter={() => !readonly && setHover(n)}
           onMouseLeave={() => !readonly && setHover(0)}
@@ -18,7 +19,9 @@ export default function RatingStars({ score, readonly = false, size = 'md', onRa
           ★
         </span>
       ))}
-      {score != null && <span className="stars-label">{Number(score).toFixed(1)}</span>}
+      {score != null && (
+        <span className="text-xs text-gray-500 ml-1 font-medium">{Number(score).toFixed(1)}</span>
+      )}
     </div>
   )
 }
