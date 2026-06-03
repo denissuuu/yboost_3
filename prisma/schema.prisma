@@ -17,6 +17,7 @@ model User {
   recipes   Recipe[]
   ratings   Rating[]
   favorites Favorite[]
+  comments  Comment[]
 }
 
 model Recipe {
@@ -30,10 +31,13 @@ model Recipe {
   ingredientText String     @default("")
   steps          String[]
   imageUrl       String?
+  prepTime       Int?
+  servings       Int?
   authorId       String
   author         User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   ratings        Rating[]
   favorites      Favorite[]
+  comments       Comment[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 }
@@ -58,3 +62,12 @@ model Favorite {
   @@id([userId, recipeId])
 }
 
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  recipeId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}

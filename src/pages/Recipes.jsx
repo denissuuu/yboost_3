@@ -26,6 +26,7 @@ export default function Recipes() {
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [filterOpen, setFilterOpen] = useState(false)
 
   const search = searchParams.get('search') || ''
   const type = searchParams.get('type') || ''
@@ -74,61 +75,107 @@ export default function Recipes() {
 
   const activeDiets = diet ? diet.split(',') : []
   const hasFilters = search || type || diet || country
+  const activeFilterCount = [search, type, country, ...activeDiets].filter(Boolean).length
 
   const inputCls = "flex-1 min-w-0 px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder:text-zinc-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
 
+  const FilterPanel = () => (
+    <div className="space-y-5">
+      <form onSubmit={(e) => { e.preventDefault(); setParam('search', searchInput.trim()); setFilterOpen(false) }} className="flex gap-1.5">
+        <input type="text" placeholder="Rechercher…" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className={inputCls} />
+        <button type="submit" className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors shrink-0">OK</button>
+      </form>
+
+      <form onSubmit={(e) => { e.preventDefault(); setParam('country', countryInput.trim()); setFilterOpen(false) }} className="flex gap-1.5">
+        <input type="text" placeholder="Pays…" value={countryInput} onChange={(e) => setCountryInput(e.target.value)} className={inputCls} />
+        <button type="submit" className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors shrink-0">OK</button>
+      </form>
+
+      <div>
+        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Type de plat</p>
+        <div className="space-y-1.5">
+          {TYPES.map(({ value, label }) => (
+            <label key={value} className="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="type" value={value} checked={type === value} onChange={() => { setParam('type', value); }} className="accent-orange-500" />
+              <span className={`text-sm ${type === value ? 'text-orange-400 font-semibold' : 'text-zinc-400'}`}>{label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Régime</p>
+        <div className="space-y-1.5">
+          {DIETS.map(({ value, label }) => (
+            <label key={value} className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={activeDiets.includes(value)} onChange={() => toggleDiet(value)} className="accent-orange-500" />
+              <span className={`text-sm ${activeDiets.includes(value) ? 'text-orange-400 font-semibold' : 'text-zinc-400'}`}>{label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {hasFilters && (
+        <button className="w-full py-2 text-sm text-zinc-500 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors" onClick={() => { setSearchParams({}); setFilterOpen(false) }}>
+          Réinitialiser
+        </button>
+      )}
+    </div>
+  )
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+      {/* Barre mobile : bouton filtres + chips actifs */}
+      <div className="md:hidden flex items-center gap-2 mb-5">
+        <button
+          onClick={() => setFilterOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-sm font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M7 12h10M11 20h2" />
+          </svg>
+          Filtres
+          {activeFilterCount > 0 && (
+            <span className="bg-orange-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+        {hasFilters && (
+          <div className="flex flex-wrap gap-1.5 min-w-0">
+            {search && <Chip label={`"${search}"`} onRemove={() => setParam('search', '')} />}
+            {country && <Chip label={country} onRemove={() => setParam('country', '')} />}
+            {type && <Chip label={TYPES.find(t => t.value === type)?.label} onRemove={() => setParam('type', '')} />}
+            {activeDiets.map(d => <Chip key={d} label={d} onRemove={() => toggleDiet(d)} />)}
+          </div>
+        )}
+      </div>
+
+      {/* Overlay filtres mobile */}
+      {filterOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setFilterOpen(false)} />
+          <div className="relative mt-auto bg-zinc-900 rounded-t-2xl border-t border-zinc-800 p-5 pb-8 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-bold text-zinc-100 text-lg">Filtres</h3>
+              <button onClick={() => setFilterOpen(false)} className="text-zinc-500 hover:text-zinc-200 text-xl leading-none">×</button>
+            </div>
+            <FilterPanel />
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-7">
-
-        {/* Sidebar */}
+        {/* Sidebar desktop */}
         <aside className="w-56 shrink-0 hidden md:block">
-          <div className="sticky top-24 bg-zinc-900 rounded-2xl border border-zinc-800 p-5 space-y-5">
-            <h3 className="font-bold text-zinc-100">Filtres</h3>
-
-            <form onSubmit={(e) => { e.preventDefault(); setParam('search', searchInput.trim()) }} className="flex gap-1.5">
-              <input type="text" placeholder="Rechercher…" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className={inputCls} />
-              <button type="submit" className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors shrink-0">OK</button>
-            </form>
-
-            <form onSubmit={(e) => { e.preventDefault(); setParam('country', countryInput.trim()) }} className="flex gap-1.5">
-              <input type="text" placeholder="Pays…" value={countryInput} onChange={(e) => setCountryInput(e.target.value)} className={inputCls} />
-              <button type="submit" className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors shrink-0">OK</button>
-            </form>
-
-            <div>
-              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Type de plat</p>
-              <div className="space-y-1.5">
-                {TYPES.map(({ value, label }) => (
-                  <label key={value} className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="type" value={value} checked={type === value} onChange={() => setParam('type', value)} className="accent-orange-500" />
-                    <span className={`text-sm ${type === value ? 'text-orange-400 font-semibold' : 'text-zinc-400'}`}>{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Régime</p>
-              <div className="space-y-1.5">
-                {DIETS.map(({ value, label }) => (
-                  <label key={value} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={activeDiets.includes(value)} onChange={() => toggleDiet(value)} className="accent-orange-500" />
-                    <span className={`text-sm ${activeDiets.includes(value) ? 'text-orange-400 font-semibold' : 'text-zinc-400'}`}>{label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {hasFilters && (
-              <button className="w-full py-2 text-sm text-zinc-500 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors" onClick={() => setSearchParams({})}>
-                Réinitialiser
-              </button>
-            )}
+          <div className="sticky top-24 bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
+            <h3 className="font-bold text-zinc-100 mb-5">Filtres</h3>
+            <FilterPanel />
           </div>
         </aside>
 
-        {/* Main */}
+        {/* Contenu principal */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-zinc-100">
@@ -137,10 +184,11 @@ export default function Recipes() {
             <span className="text-sm text-zinc-500 shrink-0">{total} recette{total !== 1 ? 's' : ''}</span>
           </div>
 
+          {/* Chips desktop */}
           {hasFilters && (
-            <div className="flex flex-wrap gap-2 mb-5">
+            <div className="hidden md:flex flex-wrap gap-2 mb-5">
               {search && <Chip label={`"${search}"`} onRemove={() => setParam('search', '')} />}
-              {country && <Chip label={`🌍 ${country}`} onRemove={() => setParam('country', '')} />}
+              {country && <Chip label={country} onRemove={() => setParam('country', '')} />}
               {type && <Chip label={TYPES.find(t => t.value === type)?.label} onRemove={() => setParam('type', '')} />}
               {activeDiets.map(d => <Chip key={d} label={d} onRemove={() => toggleDiet(d)} />)}
             </div>
@@ -152,7 +200,6 @@ export default function Recipes() {
             </div>
           ) : recipes.length === 0 ? (
             <div className="text-center py-20 bg-zinc-900 rounded-2xl border border-zinc-800">
-              <p className="text-4xl mb-3">🔍</p>
               <p className="text-zinc-400">Aucune recette trouvée.</p>
               <p className="text-sm text-zinc-600 mt-1">Essayez d'autres filtres.</p>
             </div>
@@ -187,7 +234,7 @@ function Chip({ label, onRemove }) {
   return (
     <span className="flex items-center gap-1 bg-orange-500/10 text-orange-400 text-xs font-medium px-2.5 py-1 rounded-full border border-orange-500/20">
       {label}
-      <button onClick={onRemove} className="hover:text-orange-200 ml-0.5">✕</button>
+      <button onClick={onRemove} className="hover:text-orange-200 ml-0.5">×</button>
     </span>
   )
 }
